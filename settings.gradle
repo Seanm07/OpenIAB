@@ -1,0 +1,6 @@
+include ':OpenIab Library'
+include ':Unity Plugin', ':library'
+
+project(':OpenIab Library').projectDir = file('library')
+project(':Unity Plugin').projectDir = file('unity_plugin')
+//project(':library').projectDir = file('OpenIAB/library')
