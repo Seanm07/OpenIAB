@@ -105,7 +105,7 @@ namespace OnePF
             Sku = OpenIAB_iOS.StoreSku2Sku(Sku);
 
             Debug.Log("IOS DEBUGGING NEW PURCHASE!");
-            Debug.Log(json.Serialize);
+            Debug.Log(json.serialized);
         }
 #endif
 
