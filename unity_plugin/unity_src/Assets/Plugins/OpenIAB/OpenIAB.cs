@@ -21,8 +21,8 @@ using System;
 
 namespace OnePF
 {
-    /** 
-     * Main class 
+    /**
+     * Main class
      */
     public class OpenIAB
     {
@@ -31,7 +31,7 @@ namespace OnePF
         static IOpenIAB _billing;
 
         /**
-         * Static constructor 
+         * Static constructor
          * Creates billing instance
          */
         static OpenIAB()
@@ -55,7 +55,7 @@ namespace OnePF
          * @param sku product ID
          * @param storeName name of the store
          * @param storeSku product ID in the store
-         */ 
+         */
         public static void mapSku(string sku, string storeName, string storeSku)
         {
             _billing.mapSku(sku, storeName, storeSku);
@@ -72,7 +72,7 @@ namespace OnePF
 
         /**
          * Unbinds and shuts down the billing service
-         */ 
+         */
         public static void unbindService()
         {
             _billing.unbindService();
@@ -89,7 +89,7 @@ namespace OnePF
 
         /**
          * Sends a request to get all completed purchases
-         */ 
+         */
         public static void queryInventory()
         {
             _billing.queryInventory();
@@ -98,7 +98,7 @@ namespace OnePF
         /**
          * Sends a request to get all completed purchases and specified skus information
          * @param skus product IDs
-         */ 
+         */
         public static void queryInventory(string[] skus)
         {
             _billing.queryInventory(skus);
@@ -127,7 +127,7 @@ namespace OnePF
         /**
          * Sends out a request to consume the product
          * @param purchase purchase data holder
-         */ 
+         */
         public static void consumeProduct(Purchase purchase)
         {
             _billing.consumeProduct(purchase);
@@ -135,7 +135,7 @@ namespace OnePF
 
         /**
          * Restore purchased items. iOS AppStore requirement
-         */ 
+         */
         public static void restoreTransactions()
         {
             _billing.restoreTransactions();
@@ -144,7 +144,7 @@ namespace OnePF
         /**
          * Is verbose logging enabled
          * @return true if logging is enabled
-         */ 
+         */
 		public static bool isDebugLog()
         {
             return _billing.isDebugLog();
@@ -153,7 +153,7 @@ namespace OnePF
         /**
          * Get more debug information
          * @param enabled if logging is enabled
-         */ 
+         */
         public static void enableDebugLogging(bool enabled)
         {
             _billing.enableDebugLogging(enabled);

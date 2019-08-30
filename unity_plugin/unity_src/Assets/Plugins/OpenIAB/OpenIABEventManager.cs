@@ -67,11 +67,6 @@ public class OpenIABEventManager : MonoBehaviour
 
 #pragma warning disable 0067
     /**
-     * Fired when transaction was restored
-     */ 
-    public static event Action<Purchase> transactionRestoredEvent;
-    
-    /**
      * Fired when transaction restoration process failed
      */ 
     public static event Action<string> restoreFailedEvent;
@@ -159,14 +154,6 @@ public class OpenIABEventManager : MonoBehaviour
             consumePurchaseFailedEvent(error);
     }
 
-    public void OnTransactionRestored(string json)
-    {
-        if (transactionRestoredEvent != null)
-        {
-            transactionRestoredEvent(new Purchase(json));
-        }
-    }
-
     public void OnRestoreTransactionFailed(string error)
     {
         if (restoreFailedEvent != null)
@@ -241,14 +228,6 @@ public class OpenIABEventManager : MonoBehaviour
     {
         if (consumePurchaseFailedEvent != null)
             consumePurchaseFailedEvent(error);
-    }
-
-    public void OnPurchaseRestored(string json)
-    {
-        if (transactionRestoredEvent != null)
-        {
-            transactionRestoredEvent(new Purchase(json));
-        }
     }
 
     public void OnRestoreFailed(string error)

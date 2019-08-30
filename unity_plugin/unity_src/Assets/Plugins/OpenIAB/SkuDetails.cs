@@ -33,19 +33,60 @@ namespace OnePF
         public string CurrencyCode { get; private set; }
         public string PriceValue { get; private set; }
 
+        // Subscription only variables
+		public string SubscriptionPeriod { get; private set; }		// P1W, P1M, P3M, P6M, P1Y
+		public string FreeTrialPeriod { get; private set; }			// P1D, P2D, P3D, P4D, P5D, P6D, P7D.. ETC
+		public string IntroductoryPrice { get; private set; }		// £1.23, $1.23, €1.23.. ETC
+		public string IntroductoryPriceValue { get; private set; } 	// 1.23.. ETC
+		public string IntroductoryPricePeriod { get; private set; } // P1D, P2D, P1W, P2W, P1M, P2M.. ETC
+		public string IntroductoryPriceCycles { get; private set; } // 1, 2, 3.. ETC
+
         // Used for Android
         public SkuDetails(string jsonString)
         {
+        	/*
+        		Explanation of what's happening:
+        		The jsonString looks like this:
+
+        		{
+					"itemType": "subs",
+					"sku": "premium_subscription",
+					"type": "subs",
+					"price": "£2.99",
+					"title": "Premium Membership (Real Gangster - City Crime Simulator)",
+					"description": "Become a premium member to earn awesome daily rewards and an ad-free \nexperience!",
+					"json": "{
+				  		\"productId\":\"premium_subscription\",
+						\"type\":\"subs\",
+						\"price\":\"£2.99\",
+						\"price_amount_micros\":2990000,
+						\"price_currency_code\":\"GBP\",
+						\"subscriptionPeriod\":\"P1W\",
+						\"freeTrialPeriod\":\"P3D\",
+						\"introductoryPriceAmountMicros\":1190000,
+						\"introductoryPricePeriod\":\"P1W\",
+						\"introductoryPrice\":\"£1.19\",
+						\"introductoryPriceCycles\":1,
+						\"title\":\"Premium Membership (Real Gangster - City Crime Simulator)\",
+						\"description\":\"Become a premium member to earn awesome daily rewards and an ad-free \\nexperience!\"
+					}"
+				}
+
+				Note how only itemType, sku, type, price, title and description are directly available
+				All the other values are within the "json" key
+        	*/
+
             var json = new JSON(jsonString);
+
             ItemType = json.ToString("itemType");
             Sku = json.ToString("sku");
             Type = json.ToString("type");
             Price = json.ToString("price");
             Title = json.ToString("title");
             Description = json.ToString("description");
-            Json = json.ToString("json");
-            CurrencyCode = json.ToString("currencyCode");
-            PriceValue = json.ToString("priceValue");
+
+			Json = json.ToString("json");
+
             ParseFromJson();
         }
 
@@ -62,6 +103,9 @@ namespace OnePF
 			PriceValue = json.ToString("priceValue");
 
             Sku = OpenIAB_iOS.StoreSku2Sku(Sku);
+
+            Debug.Log("IOS DEBUGGING NEW PURCHASE!");
+            Debug.Log(json.Serialize);
         }
 #endif
 
@@ -78,25 +122,31 @@ namespace OnePF
         private void ParseFromJson()
         {
             if (string.IsNullOrEmpty(Json)) return;
+
             var json = new JSON(Json);
-            if (string.IsNullOrEmpty(PriceValue))
-            {
-                float val = json.ToFloat("price_amount_micros");
-                val /= 1000000;
-                PriceValue = val.ToString();
-            }
-            if (string.IsNullOrEmpty(CurrencyCode))
-                CurrencyCode = json.ToString("price_currency_code");
+
+			PriceValue = (json.ToFloat("price_amount_micros") / 1000000).ToString();
+            CurrencyCode = json.ToString("price_currency_code");
+
+			SubscriptionPeriod = json.ToString("subscriptionPeriod");
+			FreeTrialPeriod = json.ToString("freeTrialPeriod");
+
+			IntroductoryPriceValue = (json.ToFloat("introductoryPriceAmountMicros") / 1000000).ToString();
+			IntroductoryPrice = json.ToString("introductoryPrice");
+			IntroductoryPricePeriod = json.ToString("introductoryPricePeriod");
+			IntroductoryPriceCycles = json.ToString("introductoryPriceCycles");
+
+			Sku = json.ToString("productId");
         }
 
         /**
          * ToString
          * @return formatted string
-         */ 
+         */
         public override string ToString()
         {
-            return string.Format("[SkuDetails: type = {0}, SKU = {1}, title = {2}, price = {3}, description = {4}, priceValue={5}, currency={6}]",
-                                 ItemType, Sku, Title, Price, Description, PriceValue, CurrencyCode);
+            return string.Format("[SkuDetails: type = {0}, SKU = {1}, title = {2}, price = {3}, description = {4}, priceValue = {5}, currency = {6}, subscriptionPeriod = {7}, freeTrialPeriod = {8}, introductoryPrice = {9}, introductoryPricePeriod = {10}, introductoryPriceCycles = {11}]",
+                                 ItemType, Sku, Title, Price, Description, PriceValue, CurrencyCode, SubscriptionPeriod, FreeTrialPeriod, IntroductoryPrice, IntroductoryPricePeriod, IntroductoryPriceCycles);
         }
     }
 }
