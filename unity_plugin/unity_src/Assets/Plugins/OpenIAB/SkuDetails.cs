@@ -104,10 +104,10 @@ namespace OnePF
 
             Sku = OpenIAB_iOS.StoreSku2Sku(Sku);
 
+            ParseFromJsonIOS();
+
             Debug.Log("IOS DEBUGGING NEW PURCHASE!");
             Debug.Log(json.serialized);
-
-            ParseFromJsonIOS();
         }
 
         private void ParseFromJsonIOS()
@@ -125,12 +125,25 @@ namespace OnePF
              * \"subscriptionPeriod\":\"day\"
              */
 
-            SubscriptionPeriod = json.ToFloat("");
+            SubscriptionPeriod = ConvertToISO8601(json.ToString("subscriptionCycles"), json.ToString("subscriptionPeriod"));
 
-            IntroductoryPriceValue = json.ToFloat("");
-            IntroductoryPrice = json.ToString("");
-            IntroductoryPricePeriod = json.ToString("introductoryPricePeriod");
+            IntroductoryPriceValue = json.ToFloat("introductoryPriceValue");
+            IntroductoryPrice = json.ToString("introductoryPriceFormatted");
+            IntroductoryPricePeriod = ConvertToISO8601("1", json.ToString("introductoryPricePeriod"));
             IntroductoryPriceCycles = json.ToString("introductoryPriceCycles");
+        }
+
+        private string ConvertToISO8601(string cyclesInput, string periodInput)
+        {
+            string output = "P" + cyclesInput;
+
+            switch(input)
+            {
+                case "day": output += "d"; break;
+                case "week": output += "w"; break;
+                case "month": output += "m"; break;
+                case "year": output += "y"; break;
+            }
         }
 #endif
 
