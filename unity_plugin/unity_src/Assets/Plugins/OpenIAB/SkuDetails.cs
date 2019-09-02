@@ -127,7 +127,7 @@ namespace OnePF
 
             SubscriptionPeriod = ConvertToISO8601(json.ToString("subscriptionCycles"), json.ToString("subscriptionPeriod"));
 
-            IntroductoryPriceValue = json.ToFloat("introductoryPriceValue");
+            IntroductoryPriceValue = json.ToString("introductoryPriceValue");
             IntroductoryPrice = json.ToString("introductoryPriceFormatted");
             IntroductoryPricePeriod = ConvertToISO8601("1", json.ToString("introductoryPricePeriod"));
             IntroductoryPriceCycles = json.ToString("introductoryPriceCycles");
@@ -137,13 +137,15 @@ namespace OnePF
         {
             string output = "P" + cyclesInput;
 
-            switch(input)
+            switch(periodInput)
             {
                 case "day": output += "d"; break;
                 case "week": output += "w"; break;
                 case "month": output += "m"; break;
                 case "year": output += "y"; break;
             }
+
+            return output;
         }
 #endif
 
