@@ -137,38 +137,69 @@ NSMutableDictionary* m_productMap;
         NSLocale *priceLocale = skProduct.priceLocale;
         NSString *currencyCode = [priceLocale objectForKey:NSLocaleCurrencyCode];
         NSNumber *productPrice = skProduct.price;
-        NSString *itemType = skProduct.subscriptionPeriod == nil ? "inapp" : "subs";
 
-        NSString *introPrice = @"";
+        NSString *itemType = @"inapp";
+        NSString *subscriptionCycles = @"unavailable";; // enum converted to an integer
+
+        float introPrice = 0;
         NSString *introFormattedPrice = @"";
-        NSNumber *introPricePeriod = 0;
-        NSNumber *introPriceCycles = -1; // enum converted to a number
 
-        NSNumber *trialPricePeriod = 0;
-        NSNumber *trialPriceCycles = -1; // enum converted to a number
+        NSUInteger introPricePeriod = 0;
+        NSString *introPriceCycles = @"unavailable"; // enum converted to an integer
+
+        NSUInteger trialPricePeriod = 0;
+        NSString *trialPriceCycles = @"unavailable";; // enum converted to an integer
 
         // Subscriptions are only available in iOS 11.2 and later
-        if(@available(*, 11.2, *)){
-            SKProductDiscount *introDiscount = skProduct.introductoryPrice;
+        if(@available(iOS 11.2, *)){
+            // Check if this item is a subscription
+            if(skProduct.subscriptionPeriod != nil){
+                itemType = @"subs";
 
-            if(introDiscount != nil){
-                introPrice = introDiscount.price;
-                introFormattedPrice = [numberFormatter stringFromNumber:introDiscount.price];
+                switch(skProduct.subscriptionPeriod.unit)
+                {
+                    case SKProductPeriodUnitDay: subscriptionCycles = @"day"; break;
+                    case SKProductPeriodUnitWeek: subscriptionCycles = @"week"; break;
+                    case SKProductPeriodUnitMonth: subscriptionCycles = @"month"; break;
+                    case SKProductPeriodUnitYear: subscriptionCycles = @"year"; break;
+                }
 
-                introPricePeriod = introDiscount.numberOfPeriods;
-                introPriceCycles = Int(introDiscount.subscriptionPeriod);
-            }
+                SKProductDiscount *introDiscount = skProduct.introductoryPrice;
 
-            // Discounts are only available in iOS 12.2 and later
-            if(@available(*, 12.2, *)){
-                if(skProduct.discounts.count > 0){
-                    SKProductDiscount *trialOffer = skProduct.discounts[0];
+                if(introDiscount != nil){
+                    // This value must be converted to a float otherwise it throws a memory error..
+                    introPrice = introDiscount.price.floatValue;
 
-                    trialPricePeriod = trialOffer.numberOfPeriods;
-                    trialPriceCycles = Int(trialOffer.subscriptionPeriod);
+                    introFormattedPrice = [numberFormatter stringFromNumber:introDiscount.price];
+
+                    introPricePeriod = introDiscount.numberOfPeriods;
+
+                    switch(introDiscount.subscriptionPeriod.unit)
+                    {
+                        case SKProductPeriodUnitDay: introPriceCycles = @"day"; break;
+                        case SKProductPeriodUnitWeek: introPriceCycles = @"week"; break;
+                        case SKProductPeriodUnitMonth: introPriceCycles = @"month"; break;
+                        case SKProductPeriodUnitYear: introPriceCycles = @"year"; break;
+                    }
+                }
+
+                // Discounts are only available in iOS 12.2 and later
+                if(@available(iOS 12.2, *)){
+                    if(skProduct.discounts != nil && skProduct.discounts.count > 0){
+                        SKProductDiscount *trialOffer = skProduct.discounts[0];
+
+                        trialPricePeriod = trialOffer.numberOfPeriods;
+
+                        switch(trialOffer.subscriptionPeriod.unit)
+                        {
+                            case SKProductPeriodUnitDay: trialPriceCycles = @"day"; break;
+                            case SKProductPeriodUnitWeek: trialPriceCycles = @"week"; break;
+                            case SKProductPeriodUnitMonth: trialPriceCycles = @"month"; break;
+                            case SKProductPeriodUnitYear: trialPriceCycles = @"year"; break;
+                        }
+                    }
                 }
             }
-
         }
 
         // Setup sku details
@@ -188,7 +219,7 @@ NSMutableDictionary* m_productMap;
                                     introPriceCycles, @"introductoryPriceCycles",
                                     trialPricePeriod, @"freeTrialPeriod",
                                     trialPriceCycles, @"freeTrialCycles",
-                                    skProduct.subscriptionPeriod, @"subscriptionPeriod",
+                                    subscriptionCycles, @"subscriptionPeriod",
                                     nil];
 
         NSArray* entry = [NSArray arrayWithObjects:skProduct.productIdentifier, skuDetails, nil];
@@ -356,7 +387,7 @@ NSMutableDictionary* m_productMap;
                      forSku:transaction.payment.productIdentifier
          ];
     }
-    
+
     return jsonString;
 }
 
