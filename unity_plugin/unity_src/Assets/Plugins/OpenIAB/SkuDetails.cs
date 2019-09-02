@@ -106,6 +106,31 @@ namespace OnePF
 
             Debug.Log("IOS DEBUGGING NEW PURCHASE!");
             Debug.Log(json.serialized);
+
+            ParseFromJsonIOS();
+        }
+
+        private void ParseFromJsonIOS()
+        {
+            if (string.IsNullOrEmpty(Json)) return;
+
+            var json = new JSON(Json);
+
+            /*
+             *"introductoryPriceValue\":0.00,
+             * \"introductoryPriceFormatted\":\"\u00a30.00\",
+             * \"introductoryPricePeriod\":\"1\",
+             * \"introductoryPriceCycles\":\"week\",
+             * \"subscriptionCycles\":\"7\",
+             * \"subscriptionPeriod\":\"day\"
+             */
+
+            SubscriptionPeriod = json.ToFloat("");
+
+            IntroductoryPriceValue = json.ToFloat("");
+            IntroductoryPrice = json.ToString("");
+            IntroductoryPricePeriod = json.ToString("introductoryPricePeriod");
+            IntroductoryPriceCycles = json.ToString("introductoryPriceCycles");
         }
 #endif
 

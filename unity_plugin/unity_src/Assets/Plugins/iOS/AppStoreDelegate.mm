@@ -139,22 +139,23 @@ NSMutableDictionary* m_productMap;
         NSNumber *productPrice = skProduct.price;
 
         NSString *itemType = @"inapp";
+
+        int subscriptionPeriod = 0;
         NSString *subscriptionCycles = @"unavailable";; // enum converted to an integer
 
         float introPrice = 0;
         NSString *introFormattedPrice = @"";
 
-        NSUInteger introPricePeriod = 0;
+        int introPricePeriod = 0;
         NSString *introPriceCycles = @"unavailable"; // enum converted to an integer
-
-        NSUInteger trialPricePeriod = 0;
-        NSString *trialPriceCycles = @"unavailable";; // enum converted to an integer
 
         // Subscriptions are only available in iOS 11.2 and later
         if(@available(iOS 11.2, *)){
             // Check if this item is a subscription
-            if(skProduct.subscriptionPeriod != nil){
+            if(skProduct.subscriptionPeriod != nil && skProduct.subscriptionPeriod.numberOfUnits > 0){
                 itemType = @"subs";
+
+                subscriptionPeriod = (int)skProduct.subscriptionPeriod.numberOfUnits;
 
                 switch(skProduct.subscriptionPeriod.unit)
                 {
@@ -172,7 +173,7 @@ NSMutableDictionary* m_productMap;
 
                     introFormattedPrice = [numberFormatter stringFromNumber:introDiscount.price];
 
-                    introPricePeriod = introDiscount.numberOfPeriods;
+                    introPricePeriod = (int)introDiscount.numberOfPeriods;
 
                     switch(introDiscount.subscriptionPeriod.unit)
                     {
@@ -183,24 +184,29 @@ NSMutableDictionary* m_productMap;
                     }
                 }
 
-                // Discounts are only available in iOS 12.2 and later
-                if(@available(iOS 12.2, *)){
+                // DISABLED
+                // Originally I thought this was needed for trial periods as sample code I was comparing used it this way
+                // However these are actually discounts ran while the app is live
+                // If these are used thern all discounts need to be stored not just index 0
+                // Disabled for now but should be implemented in future
+                // Discounts are only available in iOS 12.2 and later 
+                /*if(@available(iOS 12.2, *)){
                     if(skProduct.discounts != nil && skProduct.discounts.count > 0){
                         SKProductDiscount *trialOffer = skProduct.discounts[0];
+                        trialPricePeriod = (int)trialOffer.numberOfPeriods;  
 
-                        trialPricePeriod = trialOffer.numberOfPeriods;
-
-                        switch(trialOffer.subscriptionPeriod.unit)
-                        {
+                        switch(trialOffer.subscriptionPeriod.unit) { 
                             case SKProductPeriodUnitDay: trialPriceCycles = @"day"; break;
                             case SKProductPeriodUnitWeek: trialPriceCycles = @"week"; break;
-                            case SKProductPeriodUnitMonth: trialPriceCycles = @"month"; break;
-                            case SKProductPeriodUnitYear: trialPriceCycles = @"year"; break;
-                        }
-                    }
-                }
+                            case SKProductPeriodUnitMonth: trialPriceCycles = @"month"; break; 
+                            case SKProductPeriodUnitYear: trialPriceCycles = @"year"; break; 
+                        } 
+                    } 
+                }*/
             }
         }
+
+        NSString *additionalJSON = [NSString stringWithFormat:@"{\"introductoryPriceValue\":%.02f,\"introductoryPriceFormatted\":\"%@\",\"introductoryPricePeriod\":\"%i\",\"introductoryPriceCycles\":\"%@\",\"subscriptionCycles\":\"%i\",\"subscriptionPeriod\":\"%@\"}", introPrice, introFormattedPrice, introPricePeriod, introPriceCycles, subscriptionPeriod, subscriptionCycles];
 
         // Setup sku details
         NSDictionary* skuDetails = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -212,14 +218,7 @@ NSMutableDictionary* m_productMap;
                                     productPrice, @"priceValue",
                                     ([skProduct.localizedTitle length] == 0) ? @"" : skProduct.localizedTitle, @"title",
                                     ([skProduct.localizedDescription length] == 0) ? @"" : skProduct.localizedDescription, @"description",
-                                    @"", @"json",
-                                    introPrice, @"introductoryPriceValue",
-                                    introFormattedPrice, @"introductoryPriceFormatted",
-                                    introPricePeriod, @"introductoryPricePeriod",
-                                    introPriceCycles, @"introductoryPriceCycles",
-                                    trialPricePeriod, @"freeTrialPeriod",
-                                    trialPriceCycles, @"freeTrialCycles",
-                                    subscriptionCycles, @"subscriptionPeriod",
+                                    additionalJSON, @"json",
                                     nil];
 
         NSArray* entry = [NSArray arrayWithObjects:skProduct.productIdentifier, skuDetails, nil];
