@@ -105,9 +105,6 @@ namespace OnePF
             Sku = OpenIAB_iOS.StoreSku2Sku(Sku);
 
             ParseFromJsonIOS();
-
-            Debug.Log("IOS DEBUGGING NEW PURCHASE!");
-            Debug.Log(json.serialized);
         }
 
         private void ParseFromJsonIOS()
@@ -119,30 +116,88 @@ namespace OnePF
             /*
              *"introductoryPriceValue\":0.00,
              * \"introductoryPriceFormatted\":\"\u00a30.00\",
-             * \"introductoryPricePeriod\":\"1\",
-             * \"introductoryPriceCycles\":\"week\",
+             * \"introductoryPriceCycles\":\"1\",
+             * \"introductoryPricePeriod\":\"week\",
              * \"subscriptionCycles\":\"7\",
              * \"subscriptionPeriod\":\"day\"
              */
 
-            SubscriptionPeriod = ConvertToISO8601(json.ToString("subscriptionCycles"), json.ToString("subscriptionPeriod"));
+            bool isSubCyclesSet = int.TryParse(json.ToString("subscriptionCycles"), out int subCycles);
+            bool isIntroCyclesSet = int.TryParse(json.ToString("introductoryPriceCycles"), out int introCycles);
 
-            IntroductoryPriceValue = json.ToString("introductoryPriceValue");
-            IntroductoryPrice = json.ToString("introductoryPriceFormatted");
-            IntroductoryPricePeriod = ConvertToISO8601("1", json.ToString("introductoryPricePeriod"));
-            IntroductoryPriceCycles = json.ToString("introductoryPriceCycles");
+            if (isSubCyclesSet) {
+                string subPeriod = json.ToString("subscriptionPeriod");
+
+                ConvertToLongerPeriod(subCycles, subPeriod, out subCycles, out subPeriod);
+
+                SubscriptionPeriod = ConvertToISO8601(subCycles.ToString(), subPeriod);
+
+                // On iOS the free trial is within the introductory period
+                FreeTrialPeriod = "";
+
+                if (isIntroCyclesSet)
+                {
+                    string introPeriod = json.ToString("introductoryPricePeriod");
+
+                    IntroductoryPriceValue = json.ToString("introductoryPriceValue");
+                    IntroductoryPrice = json.ToString("introductoryPriceFormatted");
+
+                    ConvertToLongerPeriod(introCycles, introPeriod, out introCycles, out introPeriod);
+
+                    IntroductoryPricePeriod = !string.IsNullOrEmpty(introPeriod) ? ConvertToISO8601(introCycles.ToString(), introPeriod) : "";
+                    IntroductoryPriceCycles = introCycles.ToString();
+                }
+            }
         }
 
-        private string ConvertToISO8601(string cyclesInput, string periodInput)
+        private void ConvertToLongerPeriod(int inCycles, string inPeriod, out int outCycles, out string outPeriod)
+        {
+            outCycles = inCycles;
+            outPeriod = inPeriod;
+
+            switch (inPeriod)
+            {
+                case "day":
+                    if (inCycles >= 30)
+                    {
+                        outCycles = 1;
+                        outPeriod = "month";
+                    }
+                    else if (inCycles >= 7)
+                    {
+                        outCycles = 1;
+                        outPeriod = "week";
+                    }
+                    break;
+
+                case "week":
+                    if (inCycles >= 4)
+                    {
+                        outCycles = 1;
+                        outPeriod = "month";
+                    }
+                    break;
+
+                case "month":
+                    if (inCycles >= 12)
+                    {
+                        outCycles = 1;
+                        outPeriod = "year";
+                    }
+                    break;
+            }
+        }
+
+        private string ConvertToISO8601(string cyclesInput = "0", string periodInput = "day")
         {
             string output = "P" + cyclesInput;
 
             switch(periodInput)
             {
-                case "day": output += "d"; break;
-                case "week": output += "w"; break;
-                case "month": output += "m"; break;
-                case "year": output += "y"; break;
+                case "day": output += "D"; break;
+                case "week": output += "W"; break;
+                case "month": output += "M"; break;
+                case "year": output += "Y"; break;
             }
 
             return output;

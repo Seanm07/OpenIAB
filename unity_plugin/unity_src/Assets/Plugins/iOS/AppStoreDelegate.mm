@@ -140,14 +140,14 @@ NSMutableDictionary* m_productMap;
 
         NSString *itemType = @"inapp";
 
-        int subscriptionPeriod = 0;
-        NSString *subscriptionCycles = @"unavailable";; // enum converted to an integer
+        int subscriptionCycles = 0;
+        NSString *subscriptionPeriod = @"unavailable";; // enum converted to an integer
 
         float introPrice = 0;
         NSString *introFormattedPrice = @"";
 
-        int introPricePeriod = 0;
-        NSString *introPriceCycles = @"unavailable"; // enum converted to an integer
+        int introPriceCycles = 0;
+        NSString *introPricePeriod = @"unavailable"; // enum converted to an integer
 
         // Subscriptions are only available in iOS 11.2 and later
         if(@available(iOS 11.2, *)){
@@ -155,14 +155,14 @@ NSMutableDictionary* m_productMap;
             if(skProduct.subscriptionPeriod != nil && skProduct.subscriptionPeriod.numberOfUnits > 0){
                 itemType = @"subs";
 
-                subscriptionPeriod = (int)skProduct.subscriptionPeriod.numberOfUnits;
+                subscriptionCycles = (int)skProduct.subscriptionPeriod.numberOfUnits;
 
                 switch(skProduct.subscriptionPeriod.unit)
                 {
-                    case SKProductPeriodUnitDay: subscriptionCycles = @"day"; break;
-                    case SKProductPeriodUnitWeek: subscriptionCycles = @"week"; break;
-                    case SKProductPeriodUnitMonth: subscriptionCycles = @"month"; break;
-                    case SKProductPeriodUnitYear: subscriptionCycles = @"year"; break;
+                    case SKProductPeriodUnitDay: subscriptionPeriod = @"day"; break;
+                    case SKProductPeriodUnitWeek: subscriptionPeriod = @"week"; break;
+                    case SKProductPeriodUnitMonth: subscriptionPeriod = @"month"; break;
+                    case SKProductPeriodUnitYear: subscriptionPeriod = @"year"; break;
                 }
 
                 SKProductDiscount *introDiscount = skProduct.introductoryPrice;
@@ -173,14 +173,14 @@ NSMutableDictionary* m_productMap;
 
                     introFormattedPrice = [numberFormatter stringFromNumber:introDiscount.price];
 
-                    introPricePeriod = (int)introDiscount.numberOfPeriods;
+                    introPriceCycles = (int)introDiscount.numberOfPeriods;
 
                     switch(introDiscount.subscriptionPeriod.unit)
                     {
-                        case SKProductPeriodUnitDay: introPriceCycles = @"day"; break;
-                        case SKProductPeriodUnitWeek: introPriceCycles = @"week"; break;
-                        case SKProductPeriodUnitMonth: introPriceCycles = @"month"; break;
-                        case SKProductPeriodUnitYear: introPriceCycles = @"year"; break;
+                        case SKProductPeriodUnitDay: introPricePeriod = @"day"; break;
+                        case SKProductPeriodUnitWeek: introPricePeriod = @"week"; break;
+                        case SKProductPeriodUnitMonth: introPricePeriod = @"month"; break;
+                        case SKProductPeriodUnitYear: introPricePeriod = @"year"; break;
                     }
                 }
 
@@ -206,7 +206,7 @@ NSMutableDictionary* m_productMap;
             }
         }
 
-        NSString *additionalJSON = [NSString stringWithFormat:@"{\"introductoryPriceValue\":%.02f,\"introductoryPriceFormatted\":\"%@\",\"introductoryPricePeriod\":\"%i\",\"introductoryPriceCycles\":\"%@\",\"subscriptionCycles\":\"%i\",\"subscriptionPeriod\":\"%@\"}", introPrice, introFormattedPrice, introPricePeriod, introPriceCycles, subscriptionPeriod, subscriptionCycles];
+        NSString *additionalJSON = [NSString stringWithFormat:@"{\"introductoryPriceValue\":%.02f,\"introductoryPriceFormatted\":\"%@\",\"introductoryPriceCycles\":\"%i\",\"introductoryPricePeriod\":\"%@\",\"subscriptionCycles\":\"%i\",\"subscriptionPeriod\":\"%@\"}", introPrice, introFormattedPrice, introPriceCycles, introPricePeriod, subscriptionCycles, subscriptionPeriod];
 
         // Setup sku details
         NSDictionary* skuDetails = [NSDictionary dictionaryWithObjectsAndKeys:

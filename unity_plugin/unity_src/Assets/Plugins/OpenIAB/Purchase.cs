@@ -14,6 +14,8 @@
  *       limitations under the License.
  ******************************************************************************/
 
+using UnityEngine;
+
 namespace OnePF
 {
     /**
@@ -50,7 +52,7 @@ namespace OnePF
         /// </summary>
         public string DeveloperPayload { get; private set; }
         /// <summary>
-        /// A token that uniquely identifies a purchase for a given item and user pair. 
+        /// A token that uniquely identifies a purchase for a given item and user pair.
         /// </summary>
         public string Token { get; private set; }
         /// <summary>
@@ -93,23 +95,131 @@ namespace OnePF
             Signature = json.ToString("signature");
             AppstoreName = json.ToString("appstoreName");
 			Receipt = json.ToString("receipt");
+
+#if UNITY_IOS
+            JSON receiptJson = AppleArrayToJSON(Receipt);
+
+            if (receiptJson != null)
+            {
+                string purchaseInfo = receiptJson.ToString("purchase-info");
+
+                if (!string.IsNullOrEmpty(purchaseInfo))
+                {
+                    JSON purchaseInfoJson = AppleArrayToJSON(purchaseInfo);
+
+                    if (purchaseInfoJson != null)
+                    {
+                        string transactionId = purchaseInfoJson.ToString("original-transaction-id");
+
+                        if (!string.IsNullOrEmpty(transactionId))
+                        {
+                            Token = transactionId;
+                        }
+                        else
+                        {
+                            Debug.LogError("Failed to get transaction id");
+                        }
+                    }
+                    else
+                    {
+                        Debug.LogError("Failed to get purchaseInfo JSON!");
+                    }
+                }
+                else
+                {
+                    Debug.LogError("Failed to get purchase info");
+                }
+            }
+            else
+            {
+                Debug.LogError("Failed to get receipt JSON!");
+            }
+#endif
+        }
+
+        private JSON AppleArrayToJSON(string input)
+        {
+            string outputJson = string.Empty;
+
+            if (!string.IsNullOrEmpty(input))
+            {
+                outputJson = System.Text.Encoding.UTF8.GetString(System.Convert.FromBase64String(input));
+                outputJson = outputJson.Replace(" = ", ":").Replace(';', ',');
+
+                int charRemovalPos = outputJson.LastIndexOf(',');
+
+                if (charRemovalPos >= 0)
+                    outputJson = outputJson.Remove(charRemovalPos, 1);
+            }
+
+            return new JSON(outputJson);
         }
 
 #if UNITY_IOS
         public Purchase(JSON json) {
-            ItemType = json.ToString("itemType");
-            OrderId = json.ToString("orderId");
-            PackageName = json.ToString("packageName");
-            Sku = json.ToString("sku");
-            PurchaseTime = json.ToLong("purchaseTime");
-            PurchaseState = json.ToInt("purchaseState");
-            DeveloperPayload = json.ToString("developerPayload");
-            Token = json.ToString("token");
-            OriginalJson = json.ToString("originalJson");
-            Signature = json.ToString("signature");
-            AppstoreName = json.ToString("appstoreName");
 
-			Sku = OpenIAB_iOS.StoreSku2Sku(Sku);
+            if (json != null)
+            {
+
+                ItemType = json.ToString("itemType");
+                OrderId = json.ToString("orderId");
+                PackageName = json.ToString("packageName");
+                Sku = json.ToString("sku");
+                PurchaseTime = json.ToLong("purchaseTime");
+                PurchaseState = json.ToInt("purchaseState");
+                DeveloperPayload = json.ToString("developerPayload");
+                Token = json.ToString("token");
+                OriginalJson = json.ToString("originalJson");
+                Signature = json.ToString("signature");
+                AppstoreName = json.ToString("appstoreName");
+                Receipt = json.ToString("receipt");
+
+                Sku = OpenIAB_iOS.StoreSku2Sku(Sku);
+
+#if UNITY_IOS
+                JSON receiptJson = AppleArrayToJSON(Receipt);
+
+                if (receiptJson != null)
+                {
+                    string purchaseInfo = receiptJson.ToString("purchase-info");
+
+                    if (!string.IsNullOrEmpty(purchaseInfo))
+                    {
+                        JSON purchaseInfoJson = AppleArrayToJSON(purchaseInfo);
+
+                        if (purchaseInfoJson != null)
+                        {
+                            string transactionId = purchaseInfoJson.ToString("original-transaction-id");
+
+                            if (!string.IsNullOrEmpty(transactionId))
+                            {
+                                Token = transactionId;
+                            }
+                            else
+                            {
+                                Debug.LogError("Failed to get transaction id");
+                            }
+                        }
+                        else
+                        {
+                            Debug.LogError("Failed to get purchaseInfo JSON!");
+                        }
+                    } else
+                    {
+                        Debug.LogError("Failed to get purchase info");
+                    }
+                }
+                else
+                {
+                    Debug.LogError("Failed to get receipt JSON!");
+                }
+#endif
+
+            }
+            else
+            {
+                Debug.LogError("Null json!");
+            }
         }
 #endif
 
