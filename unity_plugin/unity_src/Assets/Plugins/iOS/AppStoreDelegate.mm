@@ -173,7 +173,7 @@ NSMutableDictionary* m_productMap;
 
                     introFormattedPrice = [numberFormatter stringFromNumber:introDiscount.price];
 
-                    introPriceCycles = (int)introDiscount.numberOfPeriods;
+                    introPriceCycles = (int)introDiscount.subscriptionPeriod.numberOfUnits;
 
                     switch(introDiscount.subscriptionPeriod.unit)
                     {
@@ -239,9 +239,13 @@ NSMutableDictionary* m_productMap;
 
 - (void)startPurchase:(NSString*)sku
 {
-    SKProduct* product = m_productMap[sku];
-    SKMutablePayment *payment = [SKMutablePayment paymentWithProduct:product];
-    [[SKPaymentQueue defaultQueue] addPayment:payment];
+    try {
+        SKProduct* product = m_productMap[sku];
+        SKMutablePayment *payment = [SKMutablePayment paymentWithProduct:product];
+        [[SKPaymentQueue defaultQueue] addPayment:payment];
+    } catch(NSException* e) {
+        UnitySendMessage(EventHandler, "OnPurchaseFailed", MakeStringCopy("Purchases unavailable! Check network connection and try again later."));
+    }
 }
 
 - (void)queryInventory
@@ -287,13 +291,20 @@ NSMutableDictionary* m_productMap;
                 [purchaseMap addObject:entry];
             }
 
-    [inventory setObject:purchaseMap forKey:@"purchaseMap"];
-    [inventory setObject:m_skuMap forKey:@"skuMap"];
+    try {
+        [inventory setObject:purchaseMap forKey:@"purchaseMap"];
+        [inventory setObject:m_skuMap forKey:@"skuMap"];
 
-    NSError* error = nil;
-    NSData* jsonData = [NSJSONSerialization dataWithJSONObject:inventory options:kNilOptions error:&error];
-    NSString* message = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-    UnitySendMessage(EventHandler, "OnQueryInventorySucceeded", MakeStringCopy([message UTF8String]));
+        NSError* error = nil;
+        NSData* jsonData = [NSJSONSerialization dataWithJSONObject:inventory options:kNilOptions error:&error];
+        NSString* message = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+        UnitySendMessage(EventHandler, "OnQueryInventorySucceeded", MakeStringCopy([message UTF8String]));
+    } catch(NSException* e) {
+        NSLog(@"Could not load skuMap! Network connection issue?");
+
+        NSString* message = @"Failed to load purchase map!";
+        UnitySendMessage(EventHandler, "OnQueryInventoryFailed", MakeStringCopy([message UTF8String]));
+    }
 }
 
 - (void)restorePurchases

@@ -174,9 +174,9 @@ namespace OnePF
                 AppstoreName = json.ToString("appstoreName");
                 Receipt = json.ToString("receipt");
 
+                // Check
                 Sku = OpenIAB_iOS.StoreSku2Sku(Sku);
 
-#if UNITY_IOS
                 JSON receiptJson = AppleArrayToJSON(Receipt);
 
                 if (receiptJson != null)
@@ -213,7 +213,6 @@ namespace OnePF
                 {
                     Debug.LogError("Failed to get receipt JSON!");
                 }
-#endif
 
             }
             else
