@@ -191,18 +191,18 @@ NSMutableDictionary* m_productMap;
                 // Disabled for now but should be implemented in future
                 // Discounts are only available in iOS 12.2 and later 
                 /*if(@available(iOS 12.2, *)){
-                    if(skProduct.discounts != nil && skProduct.discounts.count > 0){
-                        SKProductDiscount *trialOffer = skProduct.discounts[0];
-                        trialPricePeriod = (int)trialOffer.numberOfPeriods;  
+                 if(skProduct.discounts != nil && skProduct.discounts.count > 0){
+                 SKProductDiscount *trialOffer = skProduct.discounts[0];
+                 trialPricePeriod = (int)trialOffer.numberOfPeriods;  
 
-                        switch(trialOffer.subscriptionPeriod.unit) { 
-                            case SKProductPeriodUnitDay: trialPriceCycles = @"day"; break;
-                            case SKProductPeriodUnitWeek: trialPriceCycles = @"week"; break;
-                            case SKProductPeriodUnitMonth: trialPriceCycles = @"month"; break; 
-                            case SKProductPeriodUnitYear: trialPriceCycles = @"year"; break; 
-                        } 
-                    } 
-                }*/
+                 switch(trialOffer.subscriptionPeriod.unit) { 
+                 case SKProductPeriodUnitDay: trialPriceCycles = @"day"; break;
+                 case SKProductPeriodUnitWeek: trialPriceCycles = @"week"; break;
+                 case SKProductPeriodUnitMonth: trialPriceCycles = @"month"; break; 
+                 case SKProductPeriodUnitYear: trialPriceCycles = @"year"; break; 
+                 } 
+                 } 
+                 }*/
             }
         }
 
@@ -253,43 +253,50 @@ NSMutableDictionary* m_productMap;
     NSMutableDictionary* inventory = [[NSMutableDictionary alloc] init];
     NSMutableArray* purchaseMap = [[NSMutableArray alloc] init];
     NSUserDefaults* standardUserDefaults = [NSUserDefaults standardUserDefaults];
-    if (!standardUserDefaults)
+    if (!standardUserDefaults){
         NSLog(@"Couldn't access purchase storage. Purchase map won't be available.");
-    else
-        for (NSString* sku in m_skus)
+    } else {
+        for (NSString* sku in m_skus) {
             if ([[[standardUserDefaults dictionaryRepresentation] allKeys] containsObject:sku])
             {
                 NSString* encodedPurchase =  [standardUserDefaults objectForKey:sku];
                 NSError *e = nil;
-                NSDictionary* storedPurchase = [NSJSONSerialization JSONObjectWithData:
-                                                [encodedPurchase dataUsingEncoding:NSUTF8StringEncoding]
-                                                                               options: NSJSONReadingMutableContainers error: &e];
-                if (!storedPurchase) {
-                    NSLog(@"Got an error while creating the JSON object: %@", e);
-                    continue;
+
+                try {
+                    NSDictionary* storedPurchase = [NSJSONSerialization JSONObjectWithData:[encodedPurchase dataUsingEncoding:NSUTF8StringEncoding]
+                                                                                   options: NSJSONReadingMutableContainers
+                                                                                     error: &e];
+                    if (!storedPurchase) {
+                        NSLog(@"Got an error while creating the JSON object: %@", e);
+                        continue;
+                    }
+
+                    // TODO: Probably store all purchase information. Not only sku
+                    // Setup purchase
+                    NSDictionary* purchase = [NSDictionary dictionaryWithObjectsAndKeys:
+                                              @"inapp", @"itemType",
+                                              [storedPurchase objectForKey:@"orderId"], @"orderId",
+                                              [storedPurchase objectForKey:@"receipt"], @"receipt",
+                                              @"", @"packageName",
+                                              sku, @"sku",
+                                              [NSNumber numberWithLong:0], @"purchaseTime",
+                                              // TODO: copy constants from Android if ever needed
+                                              [NSNumber numberWithInt:0], @"purchaseState",
+                                              @"", @"developerPayload",
+                                              @"", @"token",
+                                              @"", @"originalJson",
+                                              @"", @"signature",
+                                              @"", @"appstoreName",
+                                              nil];
+
+                    NSArray* entry = [NSArray arrayWithObjects:sku, purchase, nil];
+                    [purchaseMap addObject:entry];
+                } catch (NSException* e) {
+                    NSLog(@"Could not parse stored purchase!");
                 }
-
-                // TODO: Probably store all purchase information. Not only sku
-                // Setup purchase
-                NSDictionary* purchase = [NSDictionary dictionaryWithObjectsAndKeys:
-                                          @"product", @"itemType",
-                                          [storedPurchase objectForKey:@"orderId"], @"orderId",
-                                          [storedPurchase objectForKey:@"receipt"], @"receipt",
-                                          @"", @"packageName",
-                                          sku, @"sku",
-                                          [NSNumber numberWithLong:0], @"purchaseTime",
-                                          // TODO: copy constants from Android if ever needed
-                                          [NSNumber numberWithInt:0], @"purchaseState",
-                                          @"", @"developerPayload",
-                                          @"", @"token",
-                                          @"", @"originalJson",
-                                          @"", @"signature",
-                                          @"", @"appstoreName",
-                                          nil];
-
-                NSArray* entry = [NSArray arrayWithObjects:sku, purchase, nil];
-                [purchaseMap addObject:entry];
             }
+        }
+    }
 
     try {
         [inventory setObject:purchaseMap forKey:@"purchaseMap"];
