@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        jar="/Users/cavelliott/Downloads/OpenIAB-master/unity_plugin/build/intermediates/exploded-aar/OpenIAB-master/library/unspecified/classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="be136578d6260aa091a7e0ab9977a72992d7e80c">
+        <dex dex="/Users/cavelliott/Downloads/OpenIAB-master/unity_plugin/build/intermediates/pre-dexed/release/classes-ec278c22cb293f092f8af15e2b45d4d7d797c34e.jar" />
+    </item>
+    <item
+        jar="/Users/cavelliott/Downloads/OpenIAB-master/unity_plugin/libs/classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="70268cef5409f9e90ce8807dda87c099503ca7e3">
+        <dex dex="/Users/cavelliott/Downloads/OpenIAB-master/unity_plugin/build/intermediates/pre-dexed/release/classes-e950ab28b75bfb2578cde7ef9ec2f17628e177e7.jar" />
+    </item>
+    <item
+        jar="/Volumes/Macintosh HD/Applications/Android Studio.app/Contents/gradle/m2repository/com/intellij/annotations/12.0/annotations-12.0.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="bbcf6448f6d40abe506e2c83b70a3e8bfd2b4539">
+        <dex dex="/Users/cavelliott/Downloads/OpenIAB-master/unity_plugin/build/intermediates/pre-dexed/release/annotations-12.0-5fa3abb1b1b500f30258130795beefaf5705bff5.jar" />
+    </item>
+    <item
+        jar="/Users/cavelliott/.gradle/caches/modules-2/files-2.1/com.braintree/fortumo-in-app/9.1.2/1aa8dc7bb4ef95ee696e793ee8211e82ef87ed/fortumo-in-app-9.1.2.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="001aa8dc7bb4ef95ee696e793ee8211e82ef87ed">
+        <dex dex="/Users/cavelliott/Downloads/OpenIAB-master/unity_plugin/build/intermediates/pre-dexed/release/fortumo-in-app-9.1.2-f84329b8232619916b354c970aef93c64f415336.jar" />
+    </item>
+    <item
+        jar="/Users/cavelliott/.gradle/caches/modules-2/files-2.1/com.amazon/in-app-purchasing/2.0.0/6f7e614455b4f45814dabb0f6e106063bd1d6572/in-app-purchasing-2.0.0.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="6f7e614455b4f45814dabb0f6e106063bd1d6572">
+        <dex dex="/Users/cavelliott/Downloads/OpenIAB-master/unity_plugin/build/intermediates/pre-dexed/release/in-app-purchasing-2.0.0-724059511d6e26a4438bdc87be40485841836f40.jar" />
+    </item>
+
+</items>
