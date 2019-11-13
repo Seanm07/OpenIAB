@@ -70,7 +70,7 @@ namespace OnePF
         /// <summary>
         /// Purchase Receipt of the order (iOS only)
         /// </summary>
-        public string Receipt { get; private set;}
+        public string Receipt { get; private set; }
 
         private Purchase()
         {
@@ -94,11 +94,19 @@ namespace OnePF
             OriginalJson = json.ToString("originalJson");
             Signature = json.ToString("signature");
             AppstoreName = json.ToString("appstoreName");
-			Receipt = json.ToString("receipt");
+            Receipt = json.ToString("receipt");
 
 #if UNITY_IOS
+            // Catch will be hit if the Sku is already a product id
+            try
+            {
+                Sku = OpenIAB_iOS.StoreSku2Sku(Sku);
+            }
+            catch (System.Collections.Generic.KeyNotFoundException) { }
+
             JSON receiptJson = AppleArrayToJSON(Receipt);
 
+            // Parse the iOS receipt token, converting it from Apple's own stupid format to normal JSON data along the way
             if (receiptJson != null)
             {
                 string purchaseInfo = receiptJson.ToString("purchase-info");
@@ -137,6 +145,8 @@ namespace OnePF
 #endif
         }
 
+        // Instead of normal JSON apple has its own structure for receipt data..
+        // This function converts apple's arrays to normal JSON data
         private JSON AppleArrayToJSON(string input)
         {
             string outputJson = string.Empty;
@@ -156,7 +166,8 @@ namespace OnePF
         }
 
 #if UNITY_IOS
-        public Purchase(JSON json) {
+        public Purchase(JSON json)
+        {
 
             if (json != null)
             {
@@ -174,8 +185,11 @@ namespace OnePF
                 AppstoreName = json.ToString("appstoreName");
                 Receipt = json.ToString("receipt");
 
-                // Check
-                Sku = OpenIAB_iOS.StoreSku2Sku(Sku);
+                // Catch will be hit if the Sku is already a product id
+                try
+                {
+                    Sku = OpenIAB_iOS.StoreSku2Sku(Sku);
+                } catch(System.Collections.Generic.KeyNotFoundException){}
 
                 JSON receiptJson = AppleArrayToJSON(Receipt);
 
@@ -204,7 +218,8 @@ namespace OnePF
                         {
                             Debug.LogError("Failed to get purchaseInfo JSON!");
                         }
-                    } else
+                    }
+                    else
                     {
                         Debug.LogError("Failed to get purchase info");
                     }
@@ -225,7 +240,7 @@ namespace OnePF
         /**
          * For debug purposes and editor mode
          * @param sku product ID
-         */ 
+         */
         public static Purchase CreateFromSku(string sku)
         {
             return CreateFromSku(sku, "");
@@ -237,7 +252,7 @@ namespace OnePF
             p.Sku = sku;
             p.DeveloperPayload = developerPayload;
 #if UNITY_IOS
-			AddIOSHack(p);
+            AddIOSHack(p);
 #endif
             return p;
         }
@@ -245,30 +260,34 @@ namespace OnePF
         /**
          * ToString
          * @return original json
-         */ 
+         */
         public override string ToString()
         {
             return "SKU:" + Sku + ";" + OriginalJson;
         }
 
 #if UNITY_IOS
-		private static void AddIOSHack(Purchase p) {
-			if(string.IsNullOrEmpty(p.AppstoreName)) {
-				p.AppstoreName = "com.apple.appstore";
-			}
-			if(string.IsNullOrEmpty(p.ItemType)) {
-				p.ItemType = "InApp";
-			}
-			if(string.IsNullOrEmpty(p.OrderId)) {
-				p.OrderId = System.Guid.NewGuid().ToString();
-			}
-		}
+        private static void AddIOSHack(Purchase p)
+        {
+            if (string.IsNullOrEmpty(p.AppstoreName))
+            {
+                p.AppstoreName = "com.apple.appstore";
+            }
+            if (string.IsNullOrEmpty(p.ItemType))
+            {
+                p.ItemType = "InApp";
+            }
+            if (string.IsNullOrEmpty(p.OrderId))
+            {
+                p.OrderId = System.Guid.NewGuid().ToString();
+            }
+        }
 #endif
 
         /**
          * Serilize to json
          * @return json string
-         */ 
+         */
         public string Serialize()
         {
             var j = new JSON();
