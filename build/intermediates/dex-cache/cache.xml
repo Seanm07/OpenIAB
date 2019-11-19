@@ -5,7 +5,7 @@
         jar="/Users/cavelliott/Downloads/OpenIAB-master/unity_plugin/build/intermediates/exploded-aar/OpenIAB-master/library/unspecified/classes.jar"
         jumboMode="false"
         revision="21.1.2"
-        sha1="be136578d6260aa091a7e0ab9977a72992d7e80c">
+        sha1="1ca975476a68e1a357e86b0978b0241bb562c674">
         <dex dex="/Users/cavelliott/Downloads/OpenIAB-master/unity_plugin/build/intermediates/pre-dexed/release/classes-ec278c22cb293f092f8af15e2b45d4d7d797c34e.jar" />
     </item>
     <item
@@ -16,18 +16,18 @@
         <dex dex="/Users/cavelliott/Downloads/OpenIAB-master/unity_plugin/build/intermediates/pre-dexed/release/classes-e950ab28b75bfb2578cde7ef9ec2f17628e177e7.jar" />
     </item>
     <item
-        jar="/Volumes/Macintosh HD/Applications/Android Studio.app/Contents/gradle/m2repository/com/intellij/annotations/12.0/annotations-12.0.jar"
-        jumboMode="false"
-        revision="21.1.2"
-        sha1="bbcf6448f6d40abe506e2c83b70a3e8bfd2b4539">
-        <dex dex="/Users/cavelliott/Downloads/OpenIAB-master/unity_plugin/build/intermediates/pre-dexed/release/annotations-12.0-5fa3abb1b1b500f30258130795beefaf5705bff5.jar" />
-    </item>
-    <item
         jar="/Users/cavelliott/.gradle/caches/modules-2/files-2.1/com.braintree/fortumo-in-app/9.1.2/1aa8dc7bb4ef95ee696e793ee8211e82ef87ed/fortumo-in-app-9.1.2.jar"
         jumboMode="false"
         revision="21.1.2"
         sha1="001aa8dc7bb4ef95ee696e793ee8211e82ef87ed">
         <dex dex="/Users/cavelliott/Downloads/OpenIAB-master/unity_plugin/build/intermediates/pre-dexed/release/fortumo-in-app-9.1.2-f84329b8232619916b354c970aef93c64f415336.jar" />
+    </item>
+    <item
+        jar="/Users/cavelliott/.gradle/caches/modules-2/files-2.1/com.intellij/annotations/12.0/bbcf6448f6d40abe506e2c83b70a3e8bfd2b4539/annotations-12.0.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="bbcf6448f6d40abe506e2c83b70a3e8bfd2b4539">
+        <dex dex="/Users/cavelliott/Downloads/OpenIAB-master/unity_plugin/build/intermediates/pre-dexed/release/annotations-12.0-cc681218f86c9db45da9daf2085e792f6cc43faf.jar" />
     </item>
     <item
         jar="/Users/cavelliott/.gradle/caches/modules-2/files-2.1/com.amazon/in-app-purchasing/2.0.0/6f7e614455b4f45814dabb0f6e106063bd1d6572/in-app-purchasing-2.0.0.jar"

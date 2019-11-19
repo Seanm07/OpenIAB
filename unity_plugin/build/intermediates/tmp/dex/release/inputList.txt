@@ -1,5 +1,5 @@
 /Users/cavelliott/Downloads/OpenIAB-master/unity_plugin/build/intermediates/classes/release
-/Users/cavelliott/Downloads/OpenIAB-master/unity_plugin/build/intermediates/pre-dexed/release/annotations-12.0-5fa3abb1b1b500f30258130795beefaf5705bff5.jar
+/Users/cavelliott/Downloads/OpenIAB-master/unity_plugin/build/intermediates/pre-dexed/release/annotations-12.0-cc681218f86c9db45da9daf2085e792f6cc43faf.jar
 /Users/cavelliott/Downloads/OpenIAB-master/unity_plugin/build/intermediates/pre-dexed/release/in-app-purchasing-2.0.0-724059511d6e26a4438bdc87be40485841836f40.jar
 /Users/cavelliott/Downloads/OpenIAB-master/unity_plugin/build/intermediates/pre-dexed/release/classes-e950ab28b75bfb2578cde7ef9ec2f17628e177e7.jar
 /Users/cavelliott/Downloads/OpenIAB-master/unity_plugin/build/intermediates/pre-dexed/release/classes-ec278c22cb293f092f8af15e2b45d4d7d797c34e.jar

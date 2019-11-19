@@ -146,6 +146,7 @@ namespace OnePF
             }
 
             var storeSku = OpenIAB_iOS.Sku2StoreSku(purchase.Sku);
+            if(storeSku == "") storeSku = purchase.Sku;
             if (Inventory_hasPurchase(storeSku))
             {
                 OpenIAB.EventManager.SendMessage("OnConsumePurchaseSucceeded", purchase.Serialize());
@@ -177,12 +178,20 @@ namespace OnePF
 
         public static string StoreSku2Sku(string storeSku)
         {
-            return _storeSku2skuMappings[storeSku];
+            if(_storeSku2skuMappings.ContainsKey(storeSku)){
+                return _storeSku2skuMappings[storeSku];
+            } else {
+                return "";
+            }
         }
 
         public static string Sku2StoreSku(string sku)
         {
-            return _sku2storeSkuMappings[sku];
+            if(_sku2storeSkuMappings.ContainsKey(sku)){
+                return _sku2storeSkuMappings[sku];
+            } else {
+                return "";
+            }
         }
 #endif
     }
